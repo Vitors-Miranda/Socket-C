@@ -122,6 +122,8 @@ int main(int* argc, char* argv[])
 					2) The socket adress that will be connect.
 					3) the size of the adress structure
 				*/
+				
+
 				printf("CLIENTE> CONEXION ESTABLECIDA CON %s:%d\r\n", ipdest, TCP_SERVICE_PORT);
 
 				//Inicio de la máquina de estados
@@ -151,7 +153,6 @@ int main(int* argc, char* argv[])
 						}
 						else
 							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", PW, input, CRLF); 
-						//PW-command = "PW" SP password CRLF
 						break;
 					case S_DATA:
 						printf("CLIENTE> Introduzca datos (enter o QUIT para salir): ");

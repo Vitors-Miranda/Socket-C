@@ -81,6 +81,9 @@ int main(int* argc, char* argv[])
 	2) The second one is the type the new socket. In this case we are using "SOCK_STREAM" based in TCP with OOB data, in other words, it is a independent transmission.
 	3) The third argument receive the protocol of our connection, in this case we are using the Transmission Control Protocol (TCP).
 	*/
+	if (sockfd == -1) {
+		error_exit("Error al crear el socket");
+	}
 	if (sockfd == INVALID_SOCKET) {
 		DWORD error = GetLastError();
 		printf("Error %d\r\n", error);
@@ -228,7 +231,9 @@ void servicio(void* socket) {
 		2) The data to be transmitted.
 		3) The length of the data that will be transmitted.
 	*/
-
+	if (recibidos == -1) {
+		error_exit("Error al enviar datos");
+	}
 	//Se reestablece el estado inicial
 	estado = S_USER;
 	fin_conexion = 0;
@@ -243,6 +248,10 @@ void servicio(void* socket) {
 		2) THE Buffer that will save the data.
 		3) The length of the data that will be saved.
 		*/
+		if (recibidos == -1) {
+			error_exit("Error al recibir datos");
+		}
+
 		buffer_in[recibidos] = 0x00;// Dado que los datos recibidos se tratan como cadenas
 									// se debe introducir el carácter 0x00 para finalizarla
 									// ya que es así como se representan las cadenas de caracteres
@@ -345,7 +354,11 @@ void servicio(void* socket) {
 		2) What type of operation will be closed (in this case the send operations).
 	*/
 	closesocket(*nuevosockfd); //SOCKET it closes the socket
+	if (closesocket(*nuevosockfd) == -1) {
+		error_exit("Error al cerrar el socket");
+	}
 	/*
+	* 
 		PARAMETERS
 		1) The socket that will be closed.
 	*/
