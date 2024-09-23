@@ -14,8 +14,8 @@
  * Autor: Juan Carlos Cuevas Martínez
  *
  ******************************************************
- * Alumno 1:
- * Alumno 2:
+ * Alumno 1: Miranda de Souza Vitor Samuel
+ * Alumno 2: Silva Carvalho Alicia Gianny
  *
  ******************************************************/
 #include <stdio.h>		// Biblioteca estándar de entrada y salida
@@ -111,13 +111,24 @@ int main(int* argc, char* argv[])
 		}
 	}
 
-	if (bind(sockfd, (struct sockaddr*)server_in, address_size) < 0) {
-		DWORD error = GetLastError();
+	if (bind(sockfd, (struct sockaddr*)server_in, address_size) < 0) { // SOCKET "bind" attributes an address to Socket ("sockfd")
+		/*
+			PARAMETERS
+			1) The socket that we going to use.
+			2) Address that will be used.
+			3) The size of the adress.
+		*/
+		DWORD error = GetLastError(); 
 		printf("Error %d\r\n", error);
 		return (-2);
 	}
 
-	if (listen(sockfd, 5) != 0) {
+	if (listen(sockfd, 5) != 0) { // SOCKET prepare the socket to recieve incoming connections.
+		/*
+			PARAMETERS
+			1) The socket that we going to use.
+			2) The max number of pending connections.
+		*/
 		DWORD error = GetLastError();
 		printf("Error %d\r\n", error);
 		return (-3);
@@ -129,7 +140,13 @@ int main(int* argc, char* argv[])
 		printf("SERVIDOR> ESPERANDO NUEVA CONEXION DE TRANSPORTE\r\n");
 		remote_addr = malloc(address_size);
 
-		nuevosockfd = accept(sockfd, (struct sockaddr*)remote_addr, &address_size);
+		nuevosockfd = accept(sockfd, (struct sockaddr*)remote_addr, &address_size); // SOCKET accept the incoming conextions.
+		/*
+			PARAMETERS
+			1) The socket that we going to use.
+			2) It saves the address of the connecting entity.
+			3) The size of the adress.
+		*/
 		if (nuevosockfd == INVALID_SOCKET) {
 			DWORD error = GetLastError();
 			printf("Error %d\r\n", error);
@@ -181,8 +198,13 @@ void servicio(void* socket) {
 	nuevosockfd = (SOCKET*)socket;
 
 	//Se obtiene la dirección del otro extremo
-	getpeername(*nuevosockfd, &remote, &remote_len);
-
+	getpeername(*nuevosockfd, &remote, &remote_len); //SOCKET It gets the address of the other end of the connection.
+	/*
+		PARAMETERS
+		1) The socket that we going to use.
+		2) It saves the address of the connecting entity.
+		3) The size of the adress.
+	*/
 	//Se comprueba si es IPv4 o IPv6
 	if (remote.sa_family == AF_INET) {
 		remote4 = (struct sockaddr_in*) & remote;
@@ -199,7 +221,13 @@ void servicio(void* socket) {
 	//Mensaje de Bienvenida
 	sprintf_s(buffer_out, sizeof(buffer_out), "%s Bienvenido al servidor Sencillo%s", OK, CRLF);
 
-	enviados = send(*nuevosockfd, buffer_out, (int)strlen(buffer_out), 0);
+	enviados = send(*nuevosockfd, buffer_out, (int)strlen(buffer_out), 0); //SOCKET it sends a data to a connected socket.
+	/*
+		PARAMETERS
+		1) The connected socket. 
+		2) The data to be transmitted.
+		3) The length of the data that will be transmitted.
+	*/
 
 	//Se reestablece el estado inicial
 	estado = S_USER;
@@ -208,8 +236,13 @@ void servicio(void* socket) {
 	printf("SERVIDOR [CLIENTE EN %s:%d]> Esperando conexion de aplicacion\r\n", remote_addr, port);
 	do {
 		//Se espera un comando del cliente
-		recibidos = recv(*nuevosockfd, buffer_in, 1023, 0);
-
+		recibidos = recv(*nuevosockfd, buffer_in, 1023, 0); //SOCKET it recieves data of the client.
+		/*
+		PARAMETERS
+		1) The connected socket.
+		2) THE Buffer that will save the data.
+		3) The length of the data that will be saved.
+		*/
 		buffer_in[recibidos] = 0x00;// Dado que los datos recibidos se tratan como cadenas
 									// se debe introducir el carácter 0x00 para finalizarla
 									// ya que es así como se representan las cadenas de caracteres
@@ -300,7 +333,15 @@ void servicio(void* socket) {
 	} while (!fin_conexion);
 
 	printf("SERVIDOR> CERRANDO CONEXION DE TRANSPORTE\r\n");
-	shutdown(*nuevosockfd, SD_SEND);
-	closesocket(*nuevosockfd);
-
+	shutdown(*nuevosockfd, SD_SEND); //SOCKET Disable the socket of send or recieve data.
+	/*
+		PARAMETERS
+		1) The connected socket.
+		2) What type of operation will be closed (in this case the send operations).
+	*/
+	closesocket(*nuevosockfd); //SOCKET it closes the socket
+	/*
+		PARAMETERS
+		1) The socket that will be closed.
+	*/
 }
