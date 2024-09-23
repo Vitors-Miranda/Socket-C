@@ -13,8 +13,8 @@
  * Autor: Juan Carlos Cuevas Martínez
  *
  ******************************************************
- * Alumno 1:
- * Alumno 2:
+ * Alumno 1: Miranda de Souza Vitor Samuel
+ * Alumno 2: Silva Carvalho Alicia Gianny
  *
  ******************************************************/
 #ifndef protocolostpte_practicas_headerfile
@@ -27,6 +27,12 @@
 #define SD  "QUIT"
 #define ECHO "ECHO"
 
+/*
+	MENSAJE = COMANDO (PARAMETRO CORTO / FRASE)
+	COMANDO = 4ALPHA
+	PARAMETRO-CORTO = 1 * VCHAR; Usuarios o claves
+	FRASE = 1 * VCHAR [SP i*VCHAR]
+*/
 
 // RESPUESTAS A COMANDOS DE APLICACION
 #define OK  "OK"
