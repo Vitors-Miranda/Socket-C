@@ -13,8 +13,8 @@
  * Autor: Juan Carlos Cuevas Martínez
  *
  ******************************************************
- * Alumno 1:
- * Alumno 2:
+ * Alumno 1: Miranda de Souza Vitor Samuel
+ * Alumno 2: Silva Carvalho Alicia Gianny
  *
  ******************************************************/
 #include <stdio.h>		// Biblioteca estándar de entrada y salida
@@ -115,7 +115,13 @@ int main(int* argc, char* argv[])
 			//Cada nueva conexión establece el estado incial en
 			estado = S_INIT;
 
-			if (connect(sockfd, server_in, address_size) == 0) {
+			if (connect(sockfd, server_in, address_size) == 0) { // SOCKET establishes a connection to a socket.
+				/*
+					PARAMETERS 
+					1) That socket that will be used to connect.
+					2) The socket adress that will be connect.
+					3) the size of the adress structure
+				*/
 				printf("CLIENTE> CONEXION ESTABLECIDA CON %s:%d\r\n", ipdest, TCP_SERVICE_PORT);
 
 				//Inicio de la máquina de estados
@@ -129,32 +135,33 @@ int main(int* argc, char* argv[])
 						printf("CLIENTE> Introduzca el usuario (enter para salir): ");
 						gets_s(input, sizeof(input));
 						if (strlen(input) == 0) {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF); 
 							estado = S_QUIT;
-						}
+						}	
 						else {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", SC, input, CRLF);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", SC, input, CRLF); 
 						}
 						break;
 					case S_PASS:
 						printf("CLIENTE> Introduzca la clave (enter para salir): ");
 						gets_s(input, sizeof(input));
 						if (strlen(input) == 0) {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF); 
 							estado = S_QUIT;
 						}
 						else
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", PW, input, CRLF);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", PW, input, CRLF); 
+						//PW-command = "PW" SP password CRLF
 						break;
 					case S_DATA:
 						printf("CLIENTE> Introduzca datos (enter o QUIT para salir): ");
 						gets_s(input, sizeof(input));
 						if (strlen(input) == 0) {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF); 
 							estado = S_QUIT;
 						}
 						else {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", ECHO, input, CRLF);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", ECHO, input, CRLF); 
 						}
 						break;
 

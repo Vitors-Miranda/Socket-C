@@ -261,8 +261,9 @@ void servicio(void* socket) {
 		case S_USER:
 			if (strcmp(cmd, SC) == 0) { // si recibido es solicitud de conexion de aplicacion
 
-				sscanf_s(buffer_in, "USER %s\r\n", usr, sizeof(usr));
-
+				sscanf_s(buffer_in, "USER %s\r\n", usr, sizeof(usr)); // APLICATION  it sends the username to autentication
+				//ABNF SINTAXIS: "USER" SP username CRLF
+				 
 				// envia OK acepta todos los usuarios hasta que tenga la clave
 				sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", OK, CRLF);
 
@@ -270,7 +271,8 @@ void servicio(void* socket) {
 				printf("SERVIDOR> Esperando clave\r\n");
 			}
 			else
-				if (strcmp(cmd, SD) == 0) {
+				if (strcmp(cmd, SD) == 0) { //APLICATION it closes the connection
+					//ABNF SINTAXIS: "QUIT" CRLF
 					sprintf_s(buffer_out, sizeof(buffer_out), "%s Fin de la conexión%s", OK, CRLF);
 					fin_conexion = 1;
 				}
@@ -282,7 +284,8 @@ void servicio(void* socket) {
 		case S_PASS:
 			if (strcmp(cmd, PW) == 0) { // si comando recibido es password
 
-				sscanf_s(buffer_in, "PASS %s\r\n", pas, sizeof(usr));
+				sscanf_s(buffer_in, "PASS %s\r\n", pas, sizeof(usr)); // APLICATION it sends the passowrd to autentication
+				//ABNF SINTAXIS: "PASS" SP password CRLF
 
 				if ((strcmp(usr, USER) == 0) && (strcmp(pas, PASSWORD) == 0)) { // si password recibido es correcto
 					// envia aceptacion de la conexion de aplicacion con el nombre de usuario
@@ -311,7 +314,9 @@ void servicio(void* socket) {
 				sprintf_s(buffer_out, sizeof(buffer_out), "%s Fin de la conexión%s", OK, CRLF);
 				fin_conexion = 1;
 			}
-			else if (strcmp(cmd, ECHO) == 0) {
+			else if (strcmp(cmd, ECHO) == 0) { //APLICATION Returns the same message to confirm that the connection was successful.
+				//ABNF SINTAXIS: "ECHO" SP *VCHAR CRLF
+
 				char echo[1024];
 				sscanf_s(buffer_in, "ECHO %[^\r]\r\n", echo, sizeof(echo));// la expresión %[^\r] hace que se busque
 																		   // se añada a echo cualquier carácter que no
