@@ -82,7 +82,7 @@ int main(int* argc, char* argv[])
 	3) The third argument receive the protocol of our connection, in this case we are using the Transmission Control Protocol (TCP).
 	*/
 	if (sockfd == -1) {
-		error_exit("Error al crear el socket");
+		printf("Error al crear el socket");
 	}
 	if (sockfd == INVALID_SOCKET) {
 		DWORD error = GetLastError();
@@ -232,7 +232,7 @@ void servicio(void* socket) {
 		3) The length of the data that will be transmitted.
 	*/
 	if (recibidos == -1) {
-		error_exit("Error al enviar datos");
+		printf("Error al enviar datos");
 	}
 	//Se reestablece el estado inicial
 	estado = S_USER;
@@ -249,7 +249,7 @@ void servicio(void* socket) {
 		3) The length of the data that will be saved.
 		*/
 		if (recibidos == -1) {
-			error_exit("Error al recibir datos");
+			printf("Error al recibir datos");
 		}
 
 		buffer_in[recibidos] = 0x00;// Dado que los datos recibidos se tratan como cadenas
@@ -355,7 +355,7 @@ void servicio(void* socket) {
 	*/
 	closesocket(*nuevosockfd); //SOCKET it closes the socket
 	if (closesocket(*nuevosockfd) == -1) {
-		error_exit("Error al cerrar el socket");
+		printf("Error al cerrar el socket");
 	}
 	/*
 	* 

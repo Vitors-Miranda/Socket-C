@@ -22,6 +22,7 @@
 #include <conio.h>		// Biblioteca de entrada salida básica
 #include <locale.h>		// Para establecer el idioma de la codificación de texto, números, etc.
 #include "protocol.h"	// Declarar constantes y funciones de la práctica
+#include <math.h>
 
 #pragma comment(lib, "Ws2_32.lib")//Inserta en la vinculación (linking) la biblioteca Ws2_32.lib
 
@@ -112,6 +113,8 @@ int main(int* argc, char* argv[])
 				address_size = sizeof(server_in6);
 			}
 
+			
+
 			//Cada nueva conexión establece el estado incial en
 			estado = S_INIT;
 
@@ -137,37 +140,91 @@ int main(int* argc, char* argv[])
 						printf("CLIENTE> Introduzca el usuario (enter para salir): ");
 						gets_s(input, sizeof(input));
 						if (strlen(input) == 0) {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF); 
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
 							estado = S_QUIT;
-						}	
+						}
 						else {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", SC, input, CRLF); 
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", SC, input, CRLF);
 						}
 						break;
 					case S_PASS:
 						printf("CLIENTE> Introduzca la clave (enter para salir): ");
 						gets_s(input, sizeof(input));
 						if (strlen(input) == 0) {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF); 
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
 							estado = S_QUIT;
 						}
 						else
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", PW, input, CRLF); 
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", PW, input, CRLF);
 						break;
 					case S_DATA:
-						printf("CLIENTE> Introduzca datos (enter o QUIT para salir): ");
-						gets_s(input, sizeof(input));
-						if (strlen(input) == 0) {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF); 
+						printf("1. Echo \n2. EQ\n3. Salir\n");
+						option = _getche();
+						float a = -100, b = -100, c = -100, x1, x2, delta, abs;
+
+						switch (option) {
+
+						//ECHO
+						case '1':
+							printf("CLIENTE> Introduzca la cadena para envial al servidor: ");
+							gets_s(input, sizeof(input));
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", ECHO, input, CRLF);
+							break;
+
+						//EQUATION
+						case '2':
+							//Recieving values
+							printf("CLIENTE> Va a calcular la ecuacuion de 2º grado: ");
+							printf("Introduza el coef del termino cuadratico a (-99 u 99): ");
+							scanf_s("%f", &a);
+
+							printf("Introduza el coef del termino depediente a (-99 u 99): ");
+							scanf_s("%f", &b);
+
+							printf("Introduza el coef del termino indepediente a (-99 u 99): ");
+							scanf_s("%f", &c);
+
+							if (a < 99 && a > -99 && b < 99 && b > -99 && c < 99 && c > -99) {
+
+								//Calc
+								delta = (b * b) - (4 * a * c);
+								abs = delta * -1;
+
+								if (delta < 0) {
+									x1 = (-b) / (2 * a);
+									x2 = sqrt(abs) / (2 * a);
+
+									//Show the result
+									printf("El delta es: %.1f\n", delta);
+									printf("X1 es: %.1f + %.1f I\n", x1, x2);
+									printf("X2 es: %.1f - %.1f I\n", x1, x2);
+								}
+								else {
+									x1 = (-b + sqrt(delta)) / 2 * a;
+									x2 = (-b - sqrt(delta)) / 2 * a;
+
+									//Show the result
+									printf("El delta es: %f\n", delta);
+									printf("X1 es: %.1f\n", x1);
+									printf("X2 es: %.1f\n", x2);
+								}
+							}
+							break;
+								
+						//QUIT
+						case '3':
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
 							estado = S_QUIT;
-						}
-						else {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", ECHO, input, CRLF); 
-						}
-						break;
+							break;
 
+						//INVALID OPTION
+						default:
+							printf("CLIENTE> Opcion invalida");
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
+							estado = S_QUIT;
+							break;
+						}
 					}
-
 					if (estado != S_INIT) {
 						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);
 						if (enviados == SOCKET_ERROR) {
