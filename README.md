@@ -1,2 +1,2 @@
-# protocolo_p1_c
- Study of protocols using socket and protocols with C
+# Practica de protocólos con C
+Uso del scokets para hacer conecciones servidor-cliente con C 
