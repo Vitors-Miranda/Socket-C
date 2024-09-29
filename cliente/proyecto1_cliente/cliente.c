@@ -174,7 +174,7 @@ int main(int* argc, char* argv[])
 						//EQUATION
 						case '2':
 							//Recieving values
-							printf("CLIENTE> Va a calcular la ecuacuion de 2º grado: ");
+							printf("CLIENTE> Va a calcular la ecuacuion de 2º grado: \n");
 							printf("Introduza el coef del termino cuadratico a (-99 u 99): ");
 							scanf_s("%f", &a);
 
@@ -184,7 +184,7 @@ int main(int* argc, char* argv[])
 							printf("Introduza el coef del termino indepediente a (-99 u 99): ");
 							scanf_s("%f", &c);
 
-							if (a < 99 && a > -99 && b < 99 && b > -99 && c < 99 && c > -99) {
+							if (a <= 99 && a >= -99 && b <= 99 && b >= -99 && c <= 99 && c >= -99) {
 
 								//Calc
 								delta = (b * b) - (4 * a * c);
