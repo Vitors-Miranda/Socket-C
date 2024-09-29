@@ -28,6 +28,25 @@
 
 void servicio(void* socket);
 
+/*
+void process_eq2d(char* message, char* response) {
+    int a, b, c;
+    double delta, x1, x2;
+
+    // Extrair los coeficientes de la mensaje recibida por del cliente
+    sscanf(message, "EQ2D %d %d %d", &a, &b, &c);
+
+    // Calcular delta
+    delta = b * b - 4 * a * c;
+
+	// adicionar el restante del codigo para calcular baskara, ejemplo con las raices reales:
+
+        root1 = (-b + sqrt(delta)) / (2 * a);
+        root2 = (-b - sqrt(delta)) / (2 * a);
+        sprintf(response, "Raices reales: x1 = %.2lf, x2 = %.2lf%s", root1, root2, CRLF);
+}
+*/
+
 int main(int* argc, char* argv[])
 {
 	WORD wVersionRequested;
@@ -318,6 +337,15 @@ void servicio(void* socket) {
 
 		case S_DATA: 
 			buffer_in[recibidos] = 0x00;
+
+			// adicionar en esta cadena una nueva condicion que verifica si la mensaje recibida es del tipo EQ2D
+			/*
+			ejemplo: 
+				if (strncmp(recv_buffer, "EQ2D", 4) == 0) {
+                // Processar a equação de segundo grau
+                process_eq2d(recv_buffer, send_buffer);
+            }
+			*/ 
 
 			if (strcmp(cmd, SD) == 0) {
 				sprintf_s(buffer_out, sizeof(buffer_out), "%s Fin de la conexión%s", OK, CRLF);

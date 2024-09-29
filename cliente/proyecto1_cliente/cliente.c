@@ -160,6 +160,7 @@ int main(int* argc, char* argv[])
 					case S_DATA:
 						printf("1. Echo \n2. EQ\n3. Salir\n");
 						option = _getche();
+						// para montar la mensagen en formato ABNF las variables a, b y c necesitan ser del tipo entero
 						float a = -100, b = -100, c = -100, x1, x2, delta, abs;
 
 						switch (option) {
@@ -198,6 +199,11 @@ int main(int* argc, char* argv[])
 									printf("El delta es: %.1f\n", delta);
 									printf("X1 es: %.1f + %.1f I\n", x1, x2);
 									printf("X2 es: %.1f - %.1f I\n", x1, x2);
+
+									/* mensage formulation in ABNF:
+									sprintf_s(buffer_out, sizeof(buffer_out), "EQ2D %d %d %d%s", a, b, c, CRLF);
+									*/
+									// despues enviamos la mensaje al servidor con el send (el servidor recebe la mensaje y calcula baskara con una funcion) y esperamos la respuesta del servidor con recv
 								}
 								else {
 									x1 = (-b + sqrt(delta)) / 2 * a;
