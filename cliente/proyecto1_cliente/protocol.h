@@ -26,7 +26,7 @@
 #define PW "PASS"
 #define SD  "QUIT"
 #define ECHO "ECHO"
-
+#define EQ2D "EQ2D"
 
 // RESPUESTAS A COMANDOS DE APLICACION
 #define OK  "OK"

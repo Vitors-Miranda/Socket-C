@@ -160,8 +160,9 @@ int main(int* argc, char* argv[])
 					case S_DATA:
 						printf("1. Echo \n2. EQ\n3. Salir\n");
 						option = _getche();
+
 						// para montar la mensagen en formato ABNF las variables a, b y c necesitan ser del tipo entero
-						float a = -100, b = -100, c = -100, x1, x2, delta, abs;
+						float a = -100, b = -100, c = -100;
 
 						switch (option) {
 
@@ -176,45 +177,24 @@ int main(int* argc, char* argv[])
 						case '2':
 							//Recieving values
 							printf("CLIENTE> Va a calcular la ecuacuion de 2º grado: \n");
-							printf("Introduza el coef del termino cuadratico a (-99 u 99): ");
-							scanf_s("%f", &a);
+							
+							
+							boolean condicion;
+							
+							do {
 
-							printf("Introduza el coef del termino depediente a (-99 u 99): ");
-							scanf_s("%f", &b);
+								printf("CLIENTE> Escriba los tres coeficientes separados por un espacio: \n");
+								scanf_s("%f %f %f", &a, &b, &c);
 
-							printf("Introduza el coef del termino indepediente a (-99 u 99): ");
-							scanf_s("%f", &c);
-
-							if (a <= 99 && a >= -99 && b <= 99 && b >= -99 && c <= 99 && c >= -99) {
-
-								//Calc
-								delta = (b * b) - (4 * a * c);
-								abs = delta * -1;
-
-								if (delta < 0) {
-									x1 = (-b) / (2 * a);
-									x2 = sqrt(abs) / (2 * a);
-
-									//Show the result
-									printf("El delta es: %.1f\n", delta);
-									printf("X1 es: %.1f + %.1f I\n", x1, x2);
-									printf("X2 es: %.1f - %.1f I\n", x1, x2);
-
-									/* mensage formulation in ABNF:
-									sprintf_s(buffer_out, sizeof(buffer_out), "EQ2D %d %d %d%s", a, b, c, CRLF);
-									*/
-									// despues enviamos la mensaje al servidor con el send (el servidor recebe la mensaje y calcula baskara con una funcion) y esperamos la respuesta del servidor con recv
+								//recieving values
+								condicion = ((a > 99 || a < -99) || (b > 99 || b < -99) || (c > 99 || c < -99));
+								
+								if(condicion){
+									printf("Termino invalido.");
 								}
-								else {
-									x1 = (-b + sqrt(delta)) / 2 * a;
-									x2 = (-b - sqrt(delta)) / 2 * a;
 
-									//Show the result
-									printf("El delta es: %f\n", delta);
-									printf("X1 es: %.1f\n", x1);
-									printf("X2 es: %.1f\n", x2);
-								}
-							}
+							} while (condicion);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %f %f %f%s", EQ2D, a, b, c, CRLF);
 							break;
 								
 						//QUIT

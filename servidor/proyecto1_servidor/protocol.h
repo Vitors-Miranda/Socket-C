@@ -26,6 +26,7 @@
 #define PW "PASS"
 #define SD  "QUIT"
 #define ECHO "ECHO"
+#define EQ2D "EQ2D"
 
 /*
 	MENSAJE = COMANDO (PARAMETRO CORTO / FRASE) CRLF

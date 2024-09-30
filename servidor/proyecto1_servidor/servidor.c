@@ -28,24 +28,35 @@
 
 void servicio(void* socket);
 
-/*
-void process_eq2d(char* message, char* response) {
-    int a, b, c;
-    double delta, x1, x2;
+void process_eq2d(float a, float b, float c, char buffer_out[1024]) {
+	float delta, x1, x2, abs, real_part, imaginary_part;
+	//sscanf(message, "EQ2D %d %d %d", &a, &b, &c);
 
-    // Extrair los coeficientes de la mensaje recibida por del cliente
-    sscanf(message, "EQ2D %d %d %d", &a, &b, &c);
+	//Calc
+	delta = (b * b) - (4 * a * c);
+	abs = delta * -1;
 
-    // Calcular delta
-    delta = b * b - 4 * a * c;
+	if (delta < 0) {
+		real_part = (-b) / (2 * a);
+		imaginary_part = sqrt(abs) / (2 * a);
 
-	// adicionar el restante del codigo para calcular baskara, ejemplo con las raices reales:
+		//Show the result
+		//sprintf_s("El delta es: %.1f\n %s", delta, CRLF);
+		//sprintf_s("X1 es: %.1f + %.1f I\n%s", real_part, CRLF);
+		//sprintf_s("X2 es: %.1f - %.1f I\n%s", imaginary_part, CRLF);
+		sprintf_s(buffer_out, sizeof(buffer_out), "%s  %2.4f + %2.4f, %2.4f - %2.4f I%s", OK, real_part, imaginary_part, real_part, imaginary_part, CRLF);
+	}
+	else {
+		x1 = (-b + sqrt(delta)) / 2 * a;
+		x2 = (-b - sqrt(delta)) / 2 * a;
 
-        root1 = (-b + sqrt(delta)) / (2 * a);
-        root2 = (-b - sqrt(delta)) / (2 * a);
-        sprintf(response, "Raices reales: x1 = %.2lf, x2 = %.2lf%s", root1, root2, CRLF);
+		//Show the result
+		printf("El delta es: %f\n", delta);
+		//sprintf_s("Raices reales: x1 = %.2f", x1, CRLF);
+		//sprintf_s("Raices reales: x2 = %.2f %s", x2, CRLF);
+		sprintf_s(buffer_out, sizeof(buffer_out), "%s  %2.4f %2.4f%s", OK, x1, x2, CRLF);
+	}
 }
-*/
 
 int main(int* argc, char* argv[])
 {
@@ -338,14 +349,6 @@ void servicio(void* socket) {
 		case S_DATA: 
 			buffer_in[recibidos] = 0x00;
 
-			// adicionar en esta cadena una nueva condicion que verifica si la mensaje recibida es del tipo EQ2D
-			/*
-			ejemplo: 
-				if (strncmp(recv_buffer, "EQ2D", 4) == 0) {
-                // Processar a equação de segundo grau
-                process_eq2d(recv_buffer, send_buffer);
-            }
-			*/ 
 
 			if (strcmp(cmd, SD) == 0) {
 				sprintf_s(buffer_out, sizeof(buffer_out), "%s Fin de la conexión%s", OK, CRLF);
@@ -360,9 +363,32 @@ void servicio(void* socket) {
 																		   // sea \r (CR)
 				sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", OK, echo, CRLF);
 			}
+			else if (strcmp(cmd, EQ2D) == 0) {
+				float a = 0, b = 0, c = 0, result;
+				result = sscanf_s(buffer_in, "EQ2D %f %f %f\r\n", &a, &b, &c);
+				
+				boolean condition = ((a > 99 || a < -99) || (b > 99 || b < -99) || (c > 99 || c < -99));
+				
+				sprintf_s(buffer_out, sizeof(buffer_out), "%s ta serto: %f%s", OK, condition, CRLF);
+				process_eq2d(a, b, c, buffer_out);
+
+				/*if (result == 3) {
+					if (condition == 0) {
+						process_eq2d(a, b, c);
+					}
+					else {
+						sprintf_s(buffer_out, sizeof(buffer_out), "%s Variaveis incorretas: %s%s", ER, cmd, CRLF);
+					}
+				} else{
+					sprintf_s(buffer_out, sizeof(buffer_out), "%s Recieving data error: %s%s", ER, cmd, CRLF);
+
+				}*/
+				
+			}
 			else {
 				sprintf_s(buffer_out, sizeof(buffer_out), "%s Comando incorrecto: %s%s", ER, cmd, CRLF);
 			}
+
 			break;
 
 		default:
