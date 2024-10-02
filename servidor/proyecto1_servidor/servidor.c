@@ -28,35 +28,6 @@
 
 void servicio(void* socket);
 
-void process_eq2d(float a, float b, float c, char buffer_out[1024]) {
-	float delta, x1, x2, abs, real_part, imaginary_part;
-	//sscanf(message, "EQ2D %d %d %d", &a, &b, &c);
-
-	//Calc
-	delta = (b * b) - (4 * a * c);
-	abs = delta * -1;
-
-	if (delta < 0) {
-		real_part = (-b) / (2 * a);
-		imaginary_part = sqrt(abs) / (2 * a);
-
-		//Show the result
-		//sprintf_s("El delta es: %.1f\n %s", delta, CRLF);
-		//sprintf_s("X1 es: %.1f + %.1f I\n%s", real_part, CRLF);
-		//sprintf_s("X2 es: %.1f - %.1f I\n%s", imaginary_part, CRLF);
-		sprintf_s(buffer_out, sizeof(buffer_out), "%s  %2.4f + %2.4f, %2.4f - %2.4f I%s", OK, real_part, imaginary_part, real_part, imaginary_part, CRLF);
-	}
-	else {
-		x1 = (-b + sqrt(delta)) / 2 * a;
-		x2 = (-b - sqrt(delta)) / 2 * a;
-
-		//Show the result
-		printf("El delta es: %f\n", delta);
-		//sprintf_s("Raices reales: x1 = %.2f", x1, CRLF);
-		//sprintf_s("Raices reales: x2 = %.2f %s", x2, CRLF);
-		sprintf_s(buffer_out, sizeof(buffer_out), "%s  %2.4f %2.4f%s", OK, x1, x2, CRLF);
-	}
-}
 
 int main(int* argc, char* argv[])
 {
@@ -364,17 +335,36 @@ void servicio(void* socket) {
 				sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", OK, echo, CRLF);
 			}
 			else if (strcmp(cmd, EQ2D) == 0) {
-				float a = 0, b = 0, c = 0, result;
+				float a = 0, b = 0, c = 0, result, delta, x1, x2, abs, real_part, imaginary_part;
+
 				result = sscanf_s(buffer_in, "EQ2D %f %f %f\r\n", &a, &b, &c);
 				
 				boolean condition = ((a > 99 || a < -99) || (b > 99 || b < -99) || (c > 99 || c < -99));
 				
 				sprintf_s(buffer_out, sizeof(buffer_out), "%s ta serto: %f%s", OK, condition, CRLF);
-				process_eq2d(a, b, c, buffer_out);
 
-				/*if (result == 3) {
+				
+
+				if (result == 3) {
 					if (condition == 0) {
-						process_eq2d(a, b, c);
+						//Calc
+						delta = (b * b) - (4 * a * c);
+						abs = delta * -1;
+
+						if (delta < 0) {
+							real_part = (-b) / (2 * a);
+							imaginary_part = sqrt(abs) / (2 * a);
+
+							//Show the result
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s>X1: %2.4f + %2.4f\nX2: %2.4f - %2.4f I%s\n", OK, real_part, imaginary_part, real_part, imaginary_part, CRLF);
+						}
+						else {
+							x1 = (-b + sqrt(delta)) / 2 * a;
+							x2 = (-b - sqrt(delta)) / 2 * a;
+
+							//Show the result
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s> X1: %2.4f\nX2: %2.4f%s\n", OK, x1, x2, CRLF);
+						}
 					}
 					else {
 						sprintf_s(buffer_out, sizeof(buffer_out), "%s Variaveis incorretas: %s%s", ER, cmd, CRLF);
@@ -382,7 +372,7 @@ void servicio(void* socket) {
 				} else{
 					sprintf_s(buffer_out, sizeof(buffer_out), "%s Recieving data error: %s%s", ER, cmd, CRLF);
 
-				}*/
+				}
 				
 			}
 			else {
