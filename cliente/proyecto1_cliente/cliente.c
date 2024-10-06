@@ -80,7 +80,13 @@ int main(int* argc, char* argv[])
 			ipversion = AF_INET;
 		}
 
-		sockfd = socket(ipversion, SOCK_STREAM, 0);
+		sockfd = socket(ipversion, SOCK_STREAM, 0);  // SOCKET With "sockfd" we are initing a Socket to establish a connection with the server side to recieve requests
+		/*
+		PARAMETERS
+		1) The first argument receive a adress family that will be used in our connection (AFNAT for IPV4 and AFNAT6 for IPV6).
+		2) The second one is the type the new socket. In this case we are using "SOCK_STREAM" based in TCP with OOB data, in other words, it is a independent transmission.
+		3) The third argument receive the protocol of our connection, in this case we are using the Transmission Control Protocol (TCP).
+		*/
 		if (sockfd == INVALID_SOCKET) {
 			printf("CLIENTE> ERROR\r\n");
 			exit(-1);
@@ -161,40 +167,40 @@ int main(int* argc, char* argv[])
 						printf("1. Echo \n2. EQ\n3. Salir\n");
 						option = _getche();
 
-						// para montar la mensagen en formato ABNF las variables a, b y c necesitan ser del tipo entero
-						float a = -100, b = -100, c = -100;
+						// Integer values of A,B and C
+						int a = -100, b = -100, c = -100;
 
 						switch (option) {
 
 						//ECHO
 						case '1':
-							printf("CLIENTE> Introduzca la cadena para envial al servidor: ");
+							printf("CLIENTE> Introduzca la cadena para envial al servidor: \n");
 							gets_s(input, sizeof(input));
 							sprintf_s(buffer_out, sizeof(buffer_out), "%s %s%s", ECHO, input, CRLF);
 							break;
 
 						//EQUATION
 						case '2':
-							//Recieving values
-							printf("CLIENTE> Va a calcular la ecuacuion de 2º grado: \n");
-							
-							
+							printf("CLIENTE> Va a calcular la ecuacion de 2º grado:\n");
 							boolean condicion;
 							
-							do {
+							//do {
+								//recieving values from user
 
-								printf("CLIENTE> Escriba los tres coeficientes separados por un espacio: \n");
-								scanf_s("%f %f %f", &a, &b, &c);
+								printf("CLIENTE> Escriba los tres coeficientes (a b c) entre -99 y 99 separados por un espacio:\n");
+								scanf_s("%d %d %d", &a, &b, &c);
 
-								//recieving values
-								condicion = ((a > 99 || a < -99) || (b > 99 || b < -99) || (c > 99 || c < -99));
+								//Condition to verify the range of our values.
+								//condicion = ((a > 99 || a < -99) || (b > 99 || b < -99) || (c > 99 || c < -99));
 								
-								if(condicion){
-									printf("Termino invalido.");
-								}
+								//if(condicion){
+									//printf("Coeficientes fuera de rango. Inténtelo de nuevo. \n");
+								//}
 
-							} while (condicion);
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %f %f %f%s", EQ2D, a, b, c, CRLF);
+							//} while (condicion);
+
+							//Sending data
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %d %d %d%s", EQ2D, a, b, c, CRLF);
 							break;
 								
 						//QUIT
@@ -212,7 +218,13 @@ int main(int* argc, char* argv[])
 						}
 					}
 					if (estado != S_INIT) {
-						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);
+						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);  //SOCKET it sends a data to a connected socket.
+						/*
+							PARAMETERS
+							1) The connected socket.
+							2) The data to be transmitted.
+							3) The length of the data that will be transmitted.
+						*/
 						if (enviados == SOCKET_ERROR) {
 							estado = S_QUIT;
 							continue;// La sentencia continue hace que la ejecución dentro de un
@@ -220,7 +232,13 @@ int main(int* argc, char* argv[])
 						}
 					}
 
-					recibidos = recv(sockfd, buffer_in, 512, 0);
+					recibidos = recv(sockfd, buffer_in, 512, 0); //SOCKET it recieves data of the client.
+					/*
+					PARAMETERS
+					1) The connected socket.
+					2) THE Buffer that will save the data.
+					3) The length of the data that will be saved.
+					*/
 					if (recibidos <= 0) {
 						DWORD error = GetLastError();
 						if (recibidos < 0) {
