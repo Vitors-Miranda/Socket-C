@@ -341,9 +341,6 @@ void servicio(void* socket) {
 				
 				boolean condition = ((a > 99 || a < -99) || (b > 99 || b < -99) || (c > 99 || c < -99));
 				
-				sprintf_s(buffer_out, sizeof(buffer_out), "%s ta serto: %f%s", OK, condition, CRLF);
-
-				
 
 				if (result == 3) {
 					if (condition == 0) {
@@ -351,32 +348,40 @@ void servicio(void* socket) {
 						delta = (b * b) - (4 * a * c);
 						abs = delta * -1;
 
+						// if the delta value is a negative value respond with a imaginary result
 						if (delta < 0) {
 							real_part = (-b) / (2 * a);
 							imaginary_part = sqrt(abs) / (2 * a);
 
 							//Show the result
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s>X1: %2.4f + %2.4f\nX2: %2.4f - %2.4f I%s\n", OK, real_part, imaginary_part, real_part, imaginary_part, CRLF);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %2.4f+%2.4fI %2.4f-%2.4fI%s\n", OK, real_part, imaginary_part, real_part, imaginary_part, CRLF); // APLICATION sends the result when the x values are imaginary
+							//ABNF SINTAXIS: "OK" SP RESULT SP RESULT CRLF 
 						}
-						else {
+						else { // if delta is a apositive value or equal than zero
 							x1 = (-b + sqrt(delta)) / 2 * a;
 							x2 = (-b - sqrt(delta)) / 2 * a;
 
-							//Show the result
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s> X1: %2.4f\nX2: %2.4f%s\n", OK, x1, x2, CRLF);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %2.4f %2.4f %s\n", OK, x1, x2, CRLF); // APLICATION sends the result when the x values are real
+							// ABNF SINTAXIS: "OK" SP RESULT SP RESULT CRLF
+						
 						}
+
+
 					}
 					else {
-						sprintf_s(buffer_out, sizeof(buffer_out), "%s Variaveis incorretas: %s%s", ER, cmd, CRLF);
+						sprintf_s(buffer_out, sizeof(buffer_out), "%s 3 %s", ER, CRLF); // APLICATION sends the type error, in this case the error type 3: parameters don't respect the range
+						// ABNF SINTAXIS: "ER" SP CODE CRLF 
 					}
 				} else{
-					sprintf_s(buffer_out, sizeof(buffer_out), "%s Recieving data error: %s%s", ER, cmd, CRLF);
+					sprintf_s(buffer_out, sizeof(buffer_out), "%s 2 %s", ER, CRLF); // APLICATION sends the type error 2: format command error
+						// ABNF SINSTAXIS: "ER" SP CODE CRLF 
 
 				}
 				
 			}
 			else {
-				sprintf_s(buffer_out, sizeof(buffer_out), "%s Comando incorrecto: %s%s", ER, cmd, CRLF);
+				sprintf_s(buffer_out, sizeof(buffer_out), "%s 1 %s", ER,CRLF); // APLICATION sends the type error 1: command error in this status or don't exist the command 
+				// ABNF SINTAXIS: "ER" SP CODE CRLF 
 			}
 
 			break;
@@ -398,9 +403,16 @@ void servicio(void* socket) {
 		2) What type of operation will be closed (in this case the send operations).
 	*/
 	closesocket(*nuevosockfd); //SOCKET it closes the socket
+	/*
+		PARAMETERS:
+		1) The connected socket
+	*/
+
+	/*
 	if (closesocket(*nuevosockfd) == -1) {
 		printf("Error al cerrar el socket");
 	}
+	*/
 	/*
 	* 
 		PARAMETERS
