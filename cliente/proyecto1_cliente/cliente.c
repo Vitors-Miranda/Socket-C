@@ -182,22 +182,22 @@ int main(int* argc, char* argv[])
 						//EQUATION
 						case '2':
 							printf("CLIENTE> Va a calcular la ecuacion de 2º grado:\n");
-							boolean condicion;
+							boolean condicion; 
 							
-							//do {
+							do {
 								//recieving values from user
 
 								printf("CLIENTE> Escriba los tres coeficientes (a b c) entre -99 y 99 separados por un espacio:\n");
 								scanf_s("%d %d %d", &a, &b, &c);
 
 								//Condition to verify the range of our values.
-								//condicion = ((a > 99 || a < -99) || (b > 99 || b < -99) || (c > 99 || c < -99));
+								condicion = ((a > 99 || a < -99) || (b > 99 || b < -99) || (c > 99 || c < -99));
 								
-								//if(condicion){
-									//printf("Coeficientes fuera de rango. Inténtelo de nuevo. \n");
-								//}
+								if(condicion){
+									printf("Coeficientes fuera de rango. Inténtelo de nuevo. \n");
+								}
 
-							//} while (condicion);
+							} while (condicion);
 
 							//Sending data
 							sprintf_s(buffer_out, sizeof(buffer_out), "%s %d %d %d%s", EQ2D, a, b, c, CRLF);

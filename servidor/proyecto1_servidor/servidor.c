@@ -354,7 +354,7 @@ void servicio(void* socket) {
 							imaginary_part = sqrt(abs) / (2 * a);
 
 							//Show the result
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %2.4f+%2.4fI %2.4f-%2.4fI%s\n", OK, real_part, imaginary_part, real_part, imaginary_part, CRLF); // APLICATION sends the result when the x values are imaginary
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s %2.4f+%2.4fI %2.4f-%2.4fI %s\n", OK, real_part, imaginary_part, real_part, imaginary_part, CRLF); // APLICATION sends the result when the x values are imaginary
 							//ABNF SINTAXIS: "OK" SP RESULT SP RESULT CRLF 
 						}
 						else { // if delta is a apositive value or equal than zero
@@ -408,13 +408,10 @@ void servicio(void* socket) {
 		1) The connected socket
 	*/
 
-	/*
-	if (closesocket(*nuevosockfd) == -1) {
+	if (closesocket(*nuevosockfd) == -1) { // SOCKET virify if the socket was closed succsessfully
 		printf("Error al cerrar el socket");
 	}
-	*/
 	/*
-	* 
 		PARAMETERS
 		1) The socket that will be closed.
 	*/
