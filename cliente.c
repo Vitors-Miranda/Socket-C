@@ -27,6 +27,8 @@
 
 #define UDP_CLIENT_PORT	60001
 #define UDP_SERVER_PORT	60000
+#define NO_AUTH 0
+#define AUTH 1
 
 int main(int *argc, char *argv[]){
 	// Variables de incialización de los Windows Sockets
@@ -46,6 +48,7 @@ int main(int *argc, char *argv[]){
     char ipdest[20]="127.0.0.1";
 	int n_secuencia=1;
 	int err=0;
+	char user[16], pass[16];
 
 	//Inicialización de idioma
 	setlocale(LC_ALL, "es-ES");
@@ -78,7 +81,7 @@ int main(int *argc, char *argv[]){
 		
 		}else{
 			char cadtemp[20];
-
+				
 				// Dirección remota del servidor para cada envío
 				printf("CLIENTE UDP> IP del servidor [%s] : ",ipdest);
 				
@@ -92,7 +95,16 @@ int main(int *argc, char *argv[]){
 				inet_pton(AF_INET,ipdest,&server_in.sin_addr.s_addr);
 
 			do{// Se estarán enviando mensajes de eco hasta que se pulse solo un enter
-				
+				printf("CLIENTE UDP> Login necesário \n");
+
+				printf("CLIENTE UDP> Introduza el usuario : \n");
+				gets_s(user, sizeof(user));
+
+				printf("CLIENTE UDP> Introduza la clave: \n");
+				gets_s(pass, sizeof(pass));
+
+				sprintf_s(buffer_out, sizeof(buffer_out), "LOGIN %s %s CRLF\r\n", user,pass);
+
 				printf("CLIENTE UDP> Introduzca una cadena para enviar al servidor: ");
 				gets_s(user_input,sizeof(user_input));
 				sprintf_s(buffer_out,sizeof(buffer_out),"ECHO %d %s\r\n",n_secuencia,user_input);
@@ -119,8 +131,8 @@ int main(int *argc, char *argv[]){
 							printf("CLIENTE UDP> Eco recibido: %s\r\n",eco);
 						}else{
 							printf("CLIENTE UDP> Error en la respuesta");
-						}
-
+						} 
+					
 					}
 					n_secuencia++;
 				}

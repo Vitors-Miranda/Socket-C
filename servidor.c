@@ -26,6 +26,8 @@
 #define UDP_SERVER_PORT	60000//Puerto en el que el servidor recibirá peticiones
 
 #pragma comment(lib, "Ws2_32.lib")//Enlaza la biblioteca Ws2_32.lib
+#define NO_AUTH 0
+#define AUTH 1
 
 int main(int *argc, char *argv[])
 {
@@ -45,6 +47,7 @@ int main(int *argc, char *argv[])
 	char iplocal[20]="127.0.0.1";
 	int n_secuencia=0;
 	int err=0;
+	int status = 0;
 
 	//Inicialización de idioma
 	setlocale(LC_ALL, "es-ES");
@@ -88,18 +91,29 @@ int main(int *argc, char *argv[])
 					if(ntohs(input_in.sin_port)==UDP_CLIENT_PORT){// Se comprueba que el mensaje llegue desde el puerto típico para
 																  // este servicio, el 6001. Si no es así no se lleva a cabo ninguna
 																  // acción.
-						sscanf_s(buffer_in,"%s %d %[^\r]s\r\n",command,sizeof(command),&n_secuencia,user_input,sizeof(user_input));
+						switch (status){
+						case NO_AUTH:
+							//receber o login e a senha
+							status = 1;
+							break;
+						case AUTH:
+							sscanf_s(buffer_in, "%s %d %[^\r]s\r\n", command, sizeof(command), &n_secuencia, user_input, sizeof(user_input));
 
-						if(strcmp(command,"ECHO")==0){// Si el mensaje no está bien formateado tampoco se responde para evitar
-													  // un gasto de recursos innecesario
-							sprintf_s(buffer_out,sizeof(buffer_out),"OK %d %s\r\n",n_secuencia,user_input);
-							
-						}else{
-							printf("SERVIDOR UDP> Comando no reconocido\r\n");
-						}
-						enviados=sendto(sockfd,buffer_out,(int)strlen(buffer_out),0,(struct sockaddr *)&input_in,sizeof(input_in));
-						if (enviados == SOCKET_ERROR) {
-							printf("SERVIDOR UDP> Error al enviar la respuesta.");
+							if (strcmp(command, "ECHO") == 0) {// Si el mensaje no está bien formateado tampoco se responde para evitar
+								// un gasto de recursos innecesario
+								sprintf_s(buffer_out, sizeof(buffer_out), "OK %d %s\r\n", n_secuencia, user_input);
+
+							}
+							else {
+								printf("SERVIDOR UDP> Comando no reconocido\r\n");
+							}
+
+							//ECHO
+							enviados = sendto(sockfd, buffer_out, (int)strlen(buffer_out), 0, (struct sockaddr*)&input_in, sizeof(input_in));
+							if (enviados == SOCKET_ERROR) {
+								printf("SERVIDOR UDP> Error al enviar la respuesta.");
+							}
+							break;
 						}
 					}
 				}//Si hay un error de recepción se silencia
