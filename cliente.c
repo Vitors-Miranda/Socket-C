@@ -15,7 +15,7 @@
  *
  ******************************************************
  * Alumno 1: Vitor Samuel Miranda de Souza
- * Alumno 2: Alicia Gianny Silva Caralho
+ * Alumno 2: Alicia Gianny Silva Carvalho
  *
  ******************************************************/
 #include <stdio.h>		// Biblioteca estándar de entrada y salida
@@ -29,6 +29,15 @@
 #define UDP_SERVER_PORT	60000
 #define NO_AUTH 0
 #define AUTH 1
+
+static int isAlfanum(const char* cadena) {
+	for (int i = 0; i < strlen(cadena); i++) {
+		if (!isalnum(cadena[i])) {
+			return 0; // No es alfanumérico
+		}
+	}
+	return 1; // Es alfanumérico
+}
 
 int main(int *argc, char *argv[]){
 	// Variables de incialización de los Windows Sockets
@@ -94,16 +103,29 @@ int main(int *argc, char *argv[]){
 				
 				inet_pton(AF_INET,ipdest,&server_in.sin_addr.s_addr);
 
+				do{ // solicita el usuario y confirma si los datos cumplem con lo especificado en el protocolo
+					printf("\nCLIENTE UDP> Introduza el usuario : ");
+					gets_s(user, sizeof(user));
+
+					if (strlen(user) < 4 || strlen(user) > 16 || isAlfanum(user)==0){
+						printf("Error: el usuario debe tener entre 4 y 16 caracteres y ser alfanumerico.\n");
+					}
+
+				} while (strlen(user) < 4 || strlen(user) > 16 || isAlfanum(user) == 0);
+
+				do { // solicita la clave y confirma si los datos cumplem con lo especificado en el protocolo
+					printf("CLIENTE UDP> Introduza la clave: ");
+					gets_s(pass, sizeof(pass));
+
+					if (strlen(pass) < 4 || strlen(pass) > 16 || isAlfanum(pass) == 0) {
+						printf("Error: la clave debe tener entre 4 y 16 caracteres.\n");
+					}
+				} while (strlen(pass) < 4 || strlen(pass) > 16 || isAlfanum(pass) == 0);
+
+				// formata la mensaje
+				sprintf_s(buffer_out, sizeof(buffer_out), "LOGIN %s %s CRLF\r\n", user, pass);
+
 			do{// Se estarán enviando mensajes de eco hasta que se pulse solo un enter
-				printf("CLIENTE UDP> Login necesário \n");
-
-				printf("CLIENTE UDP> Introduza el usuario : \n");
-				gets_s(user, sizeof(user));
-
-				printf("CLIENTE UDP> Introduza la clave: \n");
-				gets_s(pass, sizeof(pass));
-
-				sprintf_s(buffer_out, sizeof(buffer_out), "LOGIN %s %s CRLF\r\n", user,pass);
 
 				printf("CLIENTE UDP> Introduzca una cadena para enviar al servidor: ");
 				gets_s(user_input,sizeof(user_input));

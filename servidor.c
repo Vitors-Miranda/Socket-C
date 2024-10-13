@@ -15,7 +15,7 @@
  *
  ******************************************************
  * Alumno 1: Vitor Samuel Miranda de Souza
- * Alumno 2: Alicia Gianny Silva Caralho
+ * Alumno 2: Alicia Gianny Silva Carvalho
  *
  ******************************************************/
 #include <stdio.h>		// Biblioteca estándar de entrada y salida
