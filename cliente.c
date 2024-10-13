@@ -58,6 +58,7 @@ int main(int *argc, char *argv[]){
 	int n_secuencia=1;
 	int err=0;
 	char user[16], pass[16];
+	int authenticated = NO_AUTH;
 
 	//Inicialización de idioma
 	setlocale(LC_ALL, "es-ES");
@@ -103,27 +104,60 @@ int main(int *argc, char *argv[]){
 				
 				inet_pton(AF_INET,ipdest,&server_in.sin_addr.s_addr);
 
-				do{ // solicita el usuario y confirma si los datos cumplem con lo especificado en el protocolo
-					printf("\nCLIENTE UDP> Introduza el usuario : ");
-					gets_s(user, sizeof(user));
+				while (authenticated == NO_AUTH) {
+					do { // solicita el usuario y confirma si los datos cumplem con lo especificado en el protocolo
+						printf("\nCLIENTE UDP> Introduza el usuario : ");
+						gets_s(user, sizeof(user));
 
-					if (strlen(user) < 4 || strlen(user) > 16 || isAlfanum(user)==0){
-						printf("Error: el usuario debe tener entre 4 y 16 caracteres y ser alfanumerico.\n");
+						if (strlen(user) < 4 || strlen(user) > 16 || isAlfanum(user) == 0) {
+							printf("Error: el usuario debe tener entre 4 y 16 caracteres y ser alfanumerico.\n");
+						}
+
+					} while (strlen(user) < 4 || strlen(user) > 16 || isAlfanum(user) == 0);
+
+					do { // solicita la clave y confirma si los datos cumplem con lo especificado en el protocolo
+						printf("CLIENTE UDP> Introduza la clave: ");
+						gets_s(pass, sizeof(pass));
+
+						if (strlen(pass) < 4 || strlen(pass) > 16 || isAlfanum(pass) == 0) {
+							printf("Error: la clave debe tener entre 4 y 16 caracteres.\n");
+						}
+					} while (strlen(pass) < 4 || strlen(pass) > 16 || isAlfanum(pass) == 0);
+
+					// formata la mensaje
+					sprintf_s(buffer_out, sizeof(buffer_out), "LOGIN %s %s CRLF\r\n", user, pass);
+
+
+					// Enviar el mensaje de login al servidor
+					enviados = sendto(sockfd, buffer_out, (int)strlen(buffer_out), 0, (struct sockaddr*)&server_in, sizeof(server_in));
+					if (enviados == SOCKET_ERROR) {
+						printf("CLIENTE UDP> Error al enviar login.\n");
+						continue;
 					}
 
-				} while (strlen(user) < 4 || strlen(user) > 16 || isAlfanum(user) == 0);
-
-				do { // solicita la clave y confirma si los datos cumplem con lo especificado en el protocolo
-					printf("CLIENTE UDP> Introduza la clave: ");
-					gets_s(pass, sizeof(pass));
-
-					if (strlen(pass) < 4 || strlen(pass) > 16 || isAlfanum(pass) == 0) {
-						printf("Error: la clave debe tener entre 4 y 16 caracteres.\n");
+					
+					// Esperar respuesta del servidor
+					in_len = sizeof(buffer_in);
+					input_l = sizeof(input_in);
+					recibidos = recvfrom(sockfd, buffer_in, in_len, 0, (struct sockaddr*)&input_in, &input_l);
+					if (recibidos == SOCKET_ERROR) {
+						printf("CLIENTE UDP> Error al recibir respuesta.\n");
+						continue;
 					}
-				} while (strlen(pass) < 4 || strlen(pass) > 16 || isAlfanum(pass) == 0);
+					buffer_in[recibidos] = 0;
+					printf("CLIENTE UDP> Respuesta del servidor: %s\n", buffer_in);
 
-				// formata la mensaje
-				sprintf_s(buffer_out, sizeof(buffer_out), "LOGIN %s %s CRLF\r\n", user, pass);
+					// en este caso la respuesta del servidor hay que ser OK USER
+					if (strncmp(buffer_in, "OK LOGIN", 8) == 0) {
+						printf("CLIENTE UDP> Autenticación exitosa.\n");
+						authenticated = AUTH;
+					}
+					else {
+						printf("CLIENTE UDP> Autenticación fallida. Intente de nuevo.\n");
+					}
+					
+				}
+				
 
 			do{// Se estarán enviando mensajes de eco hasta que se pulse solo un enter
 
